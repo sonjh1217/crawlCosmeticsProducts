@@ -10,12 +10,7 @@ from urllib.parse import urlparse
 import re
 import certifi
 from bs4 import BeautifulSoup
-
-# def extractIngredients(line):
-#     ingredients = re.search(',"reviewPoint[.]+', line)
-#
-#     if (ingredients):
-#         return ingredients
+import  csv
 
 #Retrieves a list of all Internal links found on a page
 def getInternalLinks(bsObj, includeUrl):
@@ -33,16 +28,51 @@ def getInternalLinks(bsObj, includeUrl):
                 internalLinks.append(hrefValue)
     return internalLinks
 
+# #Retrieves a list of Internal links not in previous links found on a page
+# def getNewInternalLinks(bsObj, includeUrl, previousLinks):
+#     includeUrl = urlparse(includeUrl).scheme+"://"+urlparse(includeUrl).netloc
+#     internalLinks = []
+#     #Finds all links that begin with a "/"
+#     # for link in bsObj.findAll("a", href=re.compile("^(/|.*"+includeUrl+")")):
+#     for link in bsObj.findAll("a", href=re.compile("^(\/kr\/ko\/ProductView\.do\?prdSeq\=.*)")):
+#         if link.attrs['href'] is not None:
+#             if (link.attrs['href'].startswith("/")):
+#                 hrefValue = includeUrl + link.attrs['href']
+#             else:
+#                 hrefValue = link.attrs['href']
+#             if hrefValue not in internalLinks and hrefValue not in previousLinks:
+#                 internalLinks.append(hrefValue)
+#     return internalLinks
+#
+# #csv 파일에 저장된 데이터 읽기
+# outFile = "/Users/jihyunson/PycharmProjects/crawlIngredients/url.csv"
+# with open(outFile, "r") as csvfile:
+#     reader = csv.reader(csvfile)
+#     previousLinks = list(reader)[0]
+# internalLinks = previousLinks
+#
+#
 # 이니스프리 신제품 페이지에서 각 제품 페이지 링크 정보
-rootUrl = "http://www.innisfree.co.kr/ProductView.do?prdSeq=12878"
-startingPage = "http://www.innisfree.com/kr/ko/ShopNewPrdList.do"
-htmlFile = urlopen(startingPage, cafile=certifi.where())
-bsObj = BeautifulSoup(htmlFile, "html.parser")
-domain = urlparse(startingPage).scheme + "://" + urlparse(startingPage).netloc
-internalLinks = getInternalLinks(bsObj, domain)
+# startingPage = "http://www.innisfree.com/kr/ko/ShopNewPrdList.do"
+# # 카테고리
+# # startingPage = "http://www.innisfree.com/kr/ko/Product.do?catCd01=UA"
+# htmlFile = urlopen(startingPage, cafile=certifi.where())
+# bsObj = BeautifulSoup(htmlFile, "html.parser")
+# domain = urlparse(startingPage).scheme + "://" + urlparse(startingPage).netloc
+# internalLinks = getInternalLinks(bsObj, domain)
+# internalLinks = getNewInternalLinks(bsObj, domain, previousLinks)
+#
+# #추후 데이터를 중복해서 뽑지 않기 위해 url data를 저장한다
+# outFile = "/Users/jihyunson/PycharmProjects/crawlIngredients/url.csv"
+# with open(outFile, "w") as urlFile:
+#     wr = csv.writer(urlFile, quoting=csv.QUOTE_ALL)
+#     wr.writerow(internalLinks)
+
+# 제주 조릿대 롤온 쿨링스킨 (옵션 없는 페이지)
+# internalLinks = ["http://www.innisfree.com/kr/ko/ProductView.do?prdSeq=14998"]
 
 # 옵션 있는 페이지
-# internalLinks = ["http://www.innisfree.com/kr/ko/ProductView.do?prdSeq=14940"]
+internalLinks = ["http://www.innisfree.com/kr/ko/ProductView.do?prdSeq=14940"]
 
 # ingredient에 br, span 있는 경우 -> \r
 # internalLinks = ["http://www.innisfree.com/kr/ko/ProductView.do?prdSeq=14742"]
@@ -50,92 +80,151 @@ internalLinks = getInternalLinks(bsObj, domain)
 # 5종
 # internalLinks = ["http://www.innisfree.com/kr/ko/ProductView.do?prdSeq=13438"]
 
-for internalLink in internalLinks:
-    htmlFile = urlopen(internalLink, cafile=certifi.where())
-    bsObj = BeautifulSoup(htmlFile, "html.parser")
-    try:
-        # 솜 거르기
-        expirationObj = bsObj.find("th", text=re.compile('사용기한 또는 개봉 후 사용기간'))
-        if expirationObj == None:
-            continue
+#파일로 저장하기
+with open ('skinProducts.csv', 'w') as csvfile:
+    fieldnames = ['brand', 'category1', 'category2', 'product', 'options', 'price', 'amount', 'ingredients', 'image', 'url']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    writer.writeheader()
 
-        # 공산품 거르기
-        expiration = bsObj.find("th", text=re.compile('사용기한 또는 개봉 후 사용기간')).parent.td.get_text()
-        if "공산품" in expiration:
-            continue
+    for internalLink in internalLinks:
+        htmlFile = urlopen(internalLink, cafile=certifi.where())
+        bsObj = BeautifulSoup(htmlFile, "html.parser")
+        try:
+            # 제품 요약 정보 이용
+            # # 솜 거르기
+            # expirationObj = bsObj.find("th", text=re.compile('사용기한 또는 개봉 후 사용기간'))
+            # if expirationObj == None:
+            #     continue
+            #
+            # # 공산품 거르기
+            # expiration = bsObj.find("th", text=re.compile('사용기한 또는 개봉 후 사용기간')).parent.td.get_text()
+            # if "공산품" in expiration:
+            #     continue
+            #
+            # #브랜드
+            # brand = bsObj.find("th", text=re.compile('제조자/제조판매원')).parent.td.get_text()
+            # brandTextList = brand.split("/")
+            # brandText = brandTextList[1]
+            # brandText = brandText.replace("(주)", "")
+            # brandText = brandText.replace("㈜", "").strip()
+            #
+            # # 용량
+            # amount = bsObj.find("th", text=re.compile("용량 또는 중량")).parent.td.get_text().strip()
 
-        #브랜드
-        brand = bsObj.find("th", text=re.compile('제조자/제조판매원')).parent.td.get_text()
-        brandTextList = brand.split("/")
-        brandText = brandTextList[1]
-        brandText = brandText.replace("(주)", "")
-        brandText = brandText.replace("㈜", "").strip()
+            # 성분
+            ingredients = bsObj.find("p", text=re.compile('전성분 보기')).parent.div.get_text().strip()
+            # '\r'이 있으면 마지막 라인만 프린트됨
+            ingredients = ingredients.replace("\r", "")
 
-        # 성분
-        ingredients = bsObj.find("p", text=re.compile('전성분 보기')).parent.div.get_text().strip()
-        # '\r'이 있으면 마지막 라인만 프린트됨
-        ingredients = ingredients.replace("\r", "")
-
-        # 제품명
-        productName = bsObj.find("div", id="pdtView")['prdnm'].strip()
-
-        # 용량
-        amount = bsObj.find("th", text=re.compile("용량 또는 중량")).parent.td.get_text().strip()
-
-        #판매가
-        # priceList = bsObj.find("p", id="pdtPrice")
-        # for price in priceList:
-        #     print(price.get_text().strip())
-        price = bsObj.find(id="stdPrc")
-        if price != None:
-            price = price.get_text().strip()
-        else:
-            price = bsObj.find(id="pdtPrice")
-            if price != None:
-                price = price.find('span').get_text().strip()
-            else:
-                price = bsObj.find(id="sum")
-                if price != None:
-                    price = price.get_text().strip()
+            #옵션별로 끊어서 옵션: 성분으로 딕셔너리 만들기
+            # ingredientsOptionList = re.findall('\[[A-Z]+[0-9]+\]', ingredients)
+            # ingredientsList = re.split("\[[A-Z]+[0-9]+\]", ingredients)
+            # ingredientDict = {}
+            # print(len(ingredientsOptionList))
+            # print(len(ingredientsList))
+            # for i in range(0, len(ingredientsOptionList)):
+            #     ingredientsOptionList[i] = ingredientsOptionList[i].replace("[", "")
+            #     ingredientsOptionList[i] = ingredientsOptionList[i].replace("]", "")
+            #     ingredientDict[ingredientsOptionList[i]] = ingredientsList[i + 1].strip()
+            # print(ingredientDict)
+            # 제품 요약 정보 이용
 
 
-        print(internalLink)
-        print(brandText)
-        print(productName)
-        print(ingredients)
-        print(amount)
-        print(price)
+            # meta 이용
+            # 제품명
+            # productName = bsObj.find("div", id="pdtView")['prdnm'].strip()
+            productName = bsObj.find(property="rb:itemName")['content'].strip()
 
-        # http://www.innisfree.com/kr/ko/ProductView.do?prdSeq=14940에서 작동하는 여러 옵션 상품
-        # optionObjList = bsObj.findAll(name='input', attrs={'name': 'optionSelector'})
-        # optionCodeList = []
-        # optionNameList = []
-        #
-        # for optionObj in optionObjList:
-        #     optionName = optionObj['kindnm']
-        #     optionCode = re.search("[A-Z]+[0-9]+", optionName).group(0)
-        #     optionCodeList.append(optionCode)
-        #     optionNameList.append(optionName)
+            #제품 이미지
+            productImage = bsObj.find(property="rb:itemImage")['content']
 
-        # ingredientsOptionList = re.findall('\[[A-Z]+[0-9]+\]', ingredients)
-        # ingredientsList = re.split("\[[A-Z]+[0-9]+\]", ingredients)
-        # ingredientDict = {}
-        # for i in range(0, len(ingredientsOptionList)):
-        #     ingredientsOptionList[i] = ingredientsOptionList[i].replace("[", "")
-        #     ingredientsOptionList[i] = ingredientsOptionList[i].replace("]", "")
-        #     ingredientDict[ingredientsOptionList[i]] = ingredientsList[i+1].strip()
-        # for i in range(0, len(optionCodeList)):
-        #     print(optionNameList[i])
-        #     print(ingredientDict[optionCode])
+            #판매가
+            # priceList = bsObj.find("p", id="pdtPrice")
+            # for price in priceList:
+            #     print(price.get_text().strip())
 
-        # 옵션명
-        optionObjList = bsObj.findAll(name='input', attrs={'name': 'optionSelector'})
-        for optionObj in optionObjList:
-            print(optionObj['kindnm'])
+            # price = bsObj.find(id="stdPrc")
+            # if price != None:
+            #     price = price.get_text().strip()
+            # else:
+            #     price = bsObj.find(id="pdtPrice")
+            #     if price != None:
+            #         price = price.find('span').get_text().strip()
+            #     else:
+            #         price = bsObj.find(id="sum")
+            #         if price != None:
+            #             price = price.get_text().strip()
+            price = bsObj.find(property="rb:originalPrice")['content']
+            # meta 이용 끝
 
-    except AttributeError as e:
-        print(e)
-        print(internalLink)
+            # script 이용
+            #카테고리
+            # dtmDataLayer = bsObj.find("script", text=re.compile('var dtmDataLayer= (.*?)')).get_text()
+            dtmDataLayer = bsObj.find(text=re.compile('var dtmDataLayer= (.*?)'))
+            #bsObj.find("script", text=re.compile('var dtmDataLayer= (.*?)'))는 Tag를 뱉고
+            #bsObj.find(text=re.compile('var dtmDataLayer= (.*?)'))는 navigableString을 뱉는다
+            category1 = re.search('(?<=product_category1: ").+?(?=\")', dtmDataLayer)
+            category2 = re.search('(?<=product_category2: ").+?(?=\")', dtmDataLayer)
+            # script 이용 끝
+
+            # 옵션명
+            optionObjList = bsObj.findAll(name='input', attrs={'name': 'optionSelector'})
+            optionList = []
+            for optionObj in optionObjList:
+                optionList.append(optionObj['kindnm'])
+
+
+            # 출력
+            product = {}
+            product['brand'] = brandText
+            product['category1'] = category1.group(0)
+            product['category2'] = category2.group(0)
+            product['product'] = productName
+            product['options'] = optionList
+            product['price'] = price
+            product['amount'] = amount
+            product['ingredients'] = ingredients
+            product['image'] = productImage
+            product['url'] = internalLink
+
+            print(brandText)
+            print(category1.group(0))
+            print(category2.group(0))
+            print(productName)
+            print(optionList)
+            print(price)
+            print(amount)
+            print(ingredients)
+            print(productImage)
+            print(internalLink)
+
+
+            writer.writerow(product)
+
+
+            # http://www.innisfree.com/kr/ko/ProductView.do?prdSeq=14940에서 작동하는 여러 옵션 상품
+            # optionObjList = bsObj.findAll(name='input', attrs={'name': 'optionSelector'})
+            # optionCodeList = []
+            # optionNameList = []
+            #
+            # for optionObj in optionObjList:
+            #     optionName = optionObj['kindnm']
+            #     optionCode = re.search("[A-Z]+[0-9]+", optionName).group(0)
+            #     optionCodeList.append(optionCode)
+            #     optionNameList.append(optionName)
+
+
+
+
+
+
+
+
+        except AttributeError as e:
+            print(e)
+            print(internalLink)
+
+
 
 
 
@@ -144,7 +233,7 @@ for internalLink in internalLinks:
 #     for child in elem.parent.parent.parent.children:
 #         print(child)
 
-# outFile = "/Users/jihyunson/PycharmProjects/crawlIngredients/성분.txt"
+# outFile = "/Users/jihyunson/PycharmProjects/crawlIngredients/url.txt"
 #
 # fout = open(outFile, "w")
 #
