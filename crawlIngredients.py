@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 import re
 import certifi
 from bs4 import BeautifulSoup
-import  csv
+import csv
 
 #Retrieves a list of all Internal links found on a page
 def getInternalLinks(bsObj, includeUrl):
@@ -18,12 +18,15 @@ def getInternalLinks(bsObj, includeUrl):
     internalLinks = []
     #Finds all links that begin with a "/"
     # for link in bsObj.findAll("a", href=re.compile("^(/|.*"+includeUrl+")")):
-    for link in bsObj.findAll("a", href=re.compile("^(\/kr\/ko\/ProductView\.do\?prdSeq\=.*)")):
+    for link in bsObj.findAll("a", href=re.compile("[^a-z]productView.+", flags=re.IGNORECASE)):
         if link.attrs['href'] is not None:
-            if (link.attrs['href'].startswith("/")):
+            if link.attrs['href'].startswith("/"):
                 hrefValue = includeUrl + link.attrs['href']
+            elif link.attrs['href'].startswith('javascript'):
+                hrefValue = link.attrs['href'].replace("javascript:productView('", 'http://www.etude.co.kr/product.do?method=view&prdCd=').replace("');", '')
             else:
                 hrefValue = link.attrs['href']
+
             if hrefValue not in internalLinks:
                 internalLinks.append(hrefValue)
     return internalLinks
@@ -52,14 +55,15 @@ def getInternalLinks(bsObj, includeUrl):
 # internalLinks = previousLinks
 #
 #
-# # 이니스프리 신제품 페이지에서 각 제품 페이지 링크 정보
-# startingPage = "http://www.innisfree.com/kr/ko/ShopNewPrdList.do"
-# # 카테고리
-# # startingPage = "http://www.innisfree.com/kr/ko/Product.do?catCd01=UA"
-# htmlFile = urlopen(startingPage, cafile=certifi.where())
-# bsObj = BeautifulSoup(htmlFile, "html.parser")
-# domain = urlparse(startingPage).scheme + "://" + urlparse(startingPage).netloc
-# internalLinks = getInternalLinks(bsObj, domain)
+# 이니스프리 신제품 페이지에서 각 제품 페이지 링크 정보
+startingPage = "http://www.innisfree.com/kr/ko/ShopNewPrdList.do"
+# startingPage = "http://www.etude.co.kr/product.do?method=new"
+# 카테고리
+# startingPage = "http://www.innisfree.com/kr/ko/Product.do?catCd01=UA"
+htmlFile = urlopen(startingPage, cafile=certifi.where())
+bsObj = BeautifulSoup(htmlFile, "html.parser")
+domain = urlparse(startingPage).scheme + "://" + urlparse(startingPage).netloc
+internalLinks = getInternalLinks(bsObj, domain)
 # internalLinks = getNewInternalLinks(bsObj, domain, previousLinks)
 #
 # #추후 데이터를 중복해서 뽑지 않기 위해 url data를 저장한다
@@ -84,8 +88,10 @@ def getInternalLinks(bsObj, includeUrl):
 # internalLinks = ["http://www.innisfree.com/kr/ko/ProductView.do?prdSeq=13438"]
 
 # 에뛰드
-internalLinks = ["http://www.etude.co.kr/product.do?method=view&prdCd=101004084"]
+# internalLinks = ["http://www.etude.co.kr/product.do?method=view&prdCd=101004084"]
 
+# 에뛰드 케이스
+# internalLinks = ["http://www.etude.co.kr/product.do?method=view&prdCd=102005116"]
 
 #파일로 저장하기
 with open ('skinProducts.csv', 'w') as csvfile:
@@ -107,7 +113,7 @@ with open ('skinProducts.csv', 'w') as csvfile:
             # 공산품 거르기
             # expiration = bsObj.find("th", text=re.compile('사용기한 또는 개봉 후 사용기간')).parent.td.get_text()
             expiration = bsObj.find("th", text=re.compile('사용기한')).parent.td.get_text()
-            if "공산품" in expiration:
+            if "공산품" in expiration or len(expiration.strip()) == 0:
                 continue
 
             #브랜드
