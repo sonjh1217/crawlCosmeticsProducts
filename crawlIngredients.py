@@ -52,7 +52,7 @@ def getInternalLinks(bsObj, includeUrl):
 # internalLinks = previousLinks
 #
 #
-# 이니스프리 신제품 페이지에서 각 제품 페이지 링크 정보
+# # 이니스프리 신제품 페이지에서 각 제품 페이지 링크 정보
 # startingPage = "http://www.innisfree.com/kr/ko/ShopNewPrdList.do"
 # # 카테고리
 # # startingPage = "http://www.innisfree.com/kr/ko/Product.do?catCd01=UA"
@@ -72,13 +72,20 @@ def getInternalLinks(bsObj, includeUrl):
 # internalLinks = ["http://www.innisfree.com/kr/ko/ProductView.do?prdSeq=14998"]
 
 # 옵션 있는 페이지
-internalLinks = ["http://www.innisfree.com/kr/ko/ProductView.do?prdSeq=14940"]
+# internalLinks = ["http://www.innisfree.com/kr/ko/ProductView.do?prdSeq=14940"]
+
+# 공산품
+# internalLinks = ["http://www.innisfree.com/kr/ko/ProductView.do?prdSeq=15096"]
 
 # ingredient에 br, span 있는 경우 -> \r
 # internalLinks = ["http://www.innisfree.com/kr/ko/ProductView.do?prdSeq=14742"]
 
 # 5종
 # internalLinks = ["http://www.innisfree.com/kr/ko/ProductView.do?prdSeq=13438"]
+
+# 에뛰드
+internalLinks = ["http://www.etude.co.kr/product.do?method=view&prdCd=101004084"]
+
 
 #파일로 저장하기
 with open ('skinProducts.csv', 'w') as csvfile:
@@ -91,30 +98,39 @@ with open ('skinProducts.csv', 'w') as csvfile:
         bsObj = BeautifulSoup(htmlFile, "html.parser")
         try:
             # 제품 요약 정보 이용
-            # # 솜 거르기
+            # 솜 거르기
             # expirationObj = bsObj.find("th", text=re.compile('사용기한 또는 개봉 후 사용기간'))
-            # if expirationObj == None:
-            #     continue
-            #
-            # # 공산품 거르기
+            expirationObj = bsObj.find("th", text=re.compile('사용기한'))
+            if expirationObj == None:
+                continue
+
+            # 공산품 거르기
             # expiration = bsObj.find("th", text=re.compile('사용기한 또는 개봉 후 사용기간')).parent.td.get_text()
-            # if "공산품" in expiration:
-            #     continue
-            #
-            # #브랜드
+            expiration = bsObj.find("th", text=re.compile('사용기한')).parent.td.get_text()
+            if "공산품" in expiration:
+                continue
+
+            #브랜드
             # brand = bsObj.find("th", text=re.compile('제조자/제조판매원')).parent.td.get_text()
-            # brandTextList = brand.split("/")
-            # brandText = brandTextList[1]
-            # brandText = brandText.replace("(주)", "")
-            # brandText = brandText.replace("㈜", "").strip()
-            #
-            # # 용량
-            # amount = bsObj.find("th", text=re.compile("용량 또는 중량")).parent.td.get_text().strip()
+            brand = bsObj.find("th", text=re.compile('제조')).parent.td.get_text()
+            brandTextList = brand.split("/")
+            brandText = brandTextList[-1]
+            brandText = brandText.replace("(주)", "")
+            brandText = brandText.replace("㈜", "").strip()
+
+            # 용량
+            amount = bsObj.find("th", text=re.compile("용량")).parent.td.get_text().strip()
 
             # 성분
-            ingredients = bsObj.find("p", text=re.compile('전성분 보기')).parent.div.get_text().strip()
-            # '\r'이 있으면 마지막 라인만 프린트됨
-            ingredients = ingredients.replace("\r", "")
+            # 이니스프리
+            if "innisfree" in internalLink:
+                ingredients = bsObj.find("p", text=re.compile('전성분 보기')).parent.div.get_text().strip()
+            # # '\r'이 있으면 마지막 라인만 프린트됨
+            # ingredients = ingredients.replace("\r", "")
+
+            # 에뛰드
+            elif "etude" in internalLink:
+                ingredients = bsObj.find(alt=re.compile('전성분$')).parent.parent.get_text().strip()
 
             #옵션별로 끊어서 옵션: 성분으로 딕셔너리 만들기
             # ingredientsOptionList = re.findall('\[[A-Z]+[0-9]+\]', ingredients)
@@ -133,10 +149,18 @@ with open ('skinProducts.csv', 'w') as csvfile:
             # meta 이용
             # 제품명
             # productName = bsObj.find("div", id="pdtView")['prdnm'].strip()
-            productName = bsObj.find(property="rb:itemName")['content'].strip()
+
+            productNameObj = bsObj.find(property="rb:itemName")
+            if productNameObj != None:
+                productName = productNameObj['content'].strip()
+            else:
+                productNameString = bsObj.title.get_text()
+                productNameList = productNameString.split("-")
+                productName = productNameList[-1]
+
 
             #제품 이미지
-            productImage = bsObj.find(property="rb:itemImage")['content']
+            productImage = bsObj.find(property=re.compile('image', flags=re.IGNORECASE))['content']
 
             #판매가
             # priceList = bsObj.find("p", id="pdtPrice")
@@ -154,7 +178,12 @@ with open ('skinProducts.csv', 'w') as csvfile:
             #         price = bsObj.find(id="sum")
             #         if price != None:
             #             price = price.get_text().strip()
-            price = bsObj.find(property="rb:originalPrice")['content']
+            priceObj = bsObj.find(property="rb:originalPrice")
+            if priceObj != None:
+                price = priceObj['content']
+            else:
+                price = bsObj.find(text=re.compile('판매가')).parent.next_sibling.next_sibling.get_text()
+
             # meta 이용 끝
 
             # script 이용
@@ -163,24 +192,57 @@ with open ('skinProducts.csv', 'w') as csvfile:
             dtmDataLayer = bsObj.find(text=re.compile('var dtmDataLayer= (.*?)'))
             #bsObj.find("script", text=re.compile('var dtmDataLayer= (.*?)'))는 Tag를 뱉고
             #bsObj.find(text=re.compile('var dtmDataLayer= (.*?)'))는 navigableString을 뱉는다
-            category1 = re.search('(?<=product_category1: ").+?(?=\")', dtmDataLayer)
-            category2 = re.search('(?<=product_category2: ").+?(?=\")', dtmDataLayer)
+            category1Obj = re.search('(?<=product_category1: ").+?(?=\")', dtmDataLayer)
+
+            if category1Obj is not None:
+                category1 = category1Obj.group(0)
+                category2 = re.search('(?<=product_category2: ").+?(?=\")', dtmDataLayer).group(0)
+            else:
+            # 에뛰드
+                categoryObjList = bsObj.findAll('select', {'class':'htc13'})
+                # categoryObjList = bsObj.findAll({'class': 'htc13'}) 로 찾으면 안 나옴
+                categoryList = []
+                for categoryObj in categoryObjList:
+                    selectedCategory = categoryObj.find(selected='selected').get_text()
+                    categoryList.append(selectedCategory)
+                category1 = categoryList[0]
+                category2 = categoryList[1]
+
             # script 이용 끝
 
             # 옵션명
             optionObjList = bsObj.findAll(name='input', attrs={'name': 'optionSelector'})
-            optionList = []
-            for optionObj in optionObjList:
-                optionList.append(optionObj['kindnm'])
+            options = ''
+            for i in range(0, len(optionObjList)):
+                option = optionObjList[i]['kindnm']
+                options += option
+                if i < len(optionObjList) - 1:
+                    options += '\n'
+
+            if len(options) == 0:
+            # 에뛰드
+                optionObj = bsObj.find(id='sapCdList1')
+                options = ''
+                if optionObj is not None:
+                    optionObjList = optionObj.findAll('option', value=re.compile('[0-9]+'))
+                    for i in range(0, len(optionObjList)):
+                        option = optionObjList[i].get_text().replace('[품절]', '')
+                        options += option
+                        if i < len(optionObjList) - 1:
+                            options += '\n'
+                        # '\r\n' 붙이면 다 프린트되고 '\r'만 붙이면 마지막 라인만 출력
+                        # \n is the *nix line break, while \r\n is the Windows line break... (Windows likes to be special...) For the most part, \n is what you need.
+
+
 
 
             # 출력
             product = {}
             product['brand'] = brandText
-            product['category1'] = category1.group(0)
-            product['category2'] = category2.group(0)
+            product['category1'] = category1
+            product['category2'] = category2
             product['product'] = productName
-            product['options'] = optionList
+            product['options'] = options
             product['price'] = price
             product['amount'] = amount
             product['ingredients'] = ingredients
@@ -188,10 +250,10 @@ with open ('skinProducts.csv', 'w') as csvfile:
             product['url'] = internalLink
 
             print(brandText)
-            print(category1.group(0))
-            print(category2.group(0))
+            print(category1)
+            print(category2)
             print(productName)
-            print(optionList)
+            print(options)
             print(price)
             print(amount)
             print(ingredients)
