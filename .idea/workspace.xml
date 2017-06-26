@@ -2,11 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="28b3b4f8-7570-4ab5-964e-a506f381d517" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/startingPagesFile.csv" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/crawlIngredients.py" afterPath="$PROJECT_DIR$/crawlIngredients.py" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ingredients.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/skinProducts.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/skinProducts2.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/url.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/url.txt" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ghostdriver.log" afterPath="$PROJECT_DIR$/ghostdriver.log" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/skinProducts2.csv" afterPath="$PROJECT_DIR$/skinProducts2.csv" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -26,11 +27,11 @@
           <file leaf-file-name="crawlIngredients.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/crawlIngredients.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="277">
-                  <caret line="322" column="42" lean-forward="true" selection-start-line="322" selection-start-column="42" selection-end-line="322" selection-end-column="42" />
+                <state relative-caret-position="367">
+                  <caret line="328" column="26" lean-forward="true" selection-start-line="328" selection-start-column="26" selection-end-line="328" selection-end-column="26" />
                   <folding>
                     <element signature="e#83#117#0" expanded="true" />
-                    <marker date="1498444033000" expanded="true" signature="8392:18008" ph="..." />
+                    <marker date="1498444593000" expanded="true" signature="8392:18008" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -56,51 +57,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="skinProducts3.csv" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/skinProducts3.csv">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="11430">
-                  <caret line="762" column="27" lean-forward="true" selection-start-line="762" selection-start-column="0" selection-end-line="763" selection-end-column="0" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
           <file leaf-file-name="csv.py" pinned="false" current-in-tab="false">
             <entry file="file:///Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/csv.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1545">
+                <state relative-caret-position="174">
                   <caret line="112" column="21" lean-forward="false" selection-start-line="112" selection-start-column="13" selection-end-line="112" selection-end-column="21" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="skinProducts2.csv" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/skinProducts2.csv">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="15">
-                  <caret line="1" column="38" lean-forward="false" selection-start-line="1" selection-start-column="14" selection-end-line="1" selection-end-column="38" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="startingPagesFile.csv" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/startingPagesFile.csv">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="30">
-                  <caret line="2" column="44" lean-forward="false" selection-start-line="2" selection-start-column="44" selection-end-line="2" selection-end-column="44" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="url.csv" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/url.csv">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="15">
-                  <caret line="1" column="0" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
                   <folding />
                 </state>
               </provider>
@@ -164,7 +125,7 @@
                   <caret line="159" column="5" lean-forward="false" selection-start-line="159" selection-start-column="5" selection-end-line="159" selection-end-column="5" />
                   <folding>
                     <element signature="e#83#117#0" expanded="true" />
-                    <marker date="1498444033000" expanded="true" signature="8392:18008" ph="..." />
+                    <marker date="1498444593000" expanded="true" signature="8392:18008" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -600,7 +561,7 @@
           <caret line="36" column="0" lean-forward="true" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
           <folding>
             <element signature="e#83#117#0" expanded="true" />
-            <marker date="1498444033000" expanded="true" signature="8392:18008" ph="..." />
+            <marker date="1498444593000" expanded="true" signature="8392:18008" ph="..." />
           </folding>
         </state>
       </provider>
@@ -815,14 +776,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/url.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="0" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/Downloads/에뛰드-쇼핑-드로잉 슬림 아이브라우 1.5mm.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="50160">
@@ -853,7 +806,7 @@
     <entry file="file://$PROJECT_DIR$/skinProducts3.csv">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="11430">
-          <caret line="762" column="27" lean-forward="true" selection-start-line="762" selection-start-column="0" selection-end-line="763" selection-end-column="0" />
+          <caret line="762" column="27" lean-forward="false" selection-start-line="762" selection-start-column="0" selection-end-line="763" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -868,7 +821,7 @@
     </entry>
     <entry file="file:///Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/csv.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1545">
+        <state relative-caret-position="174">
           <caret line="112" column="21" lean-forward="false" selection-start-line="112" selection-start-column="13" selection-end-line="112" selection-end-column="21" />
           <folding />
         </state>
@@ -890,13 +843,21 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/url.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="1" column="0" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/crawlIngredients.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="277">
-          <caret line="322" column="42" lean-forward="true" selection-start-line="322" selection-start-column="42" selection-end-line="322" selection-end-column="42" />
+        <state relative-caret-position="367">
+          <caret line="328" column="26" lean-forward="true" selection-start-line="328" selection-start-column="26" selection-end-line="328" selection-end-column="26" />
           <folding>
             <element signature="e#83#117#0" expanded="true" />
-            <marker date="1498444033000" expanded="true" signature="8392:18008" ph="..." />
+            <marker date="1498444593000" expanded="true" signature="8392:18008" ph="..." />
           </folding>
         </state>
       </provider>
