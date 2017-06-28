@@ -1,20 +1,15 @@
-from urllib.parse import urlparse
 import re
+from urllib.parse import urlparse
 
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, WebDriverException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 def get_page_sources(starting_page, driver):
     page_sources = []
-    # 보이지 않는 웹드라이버(팬텀)
-    # driver = webdriver.PhantomJS(executable_path='/Users/JihyunSon/Downloads/phantomjs-2.1.1-macosx/bin/phantomjs')
 
-    # 첫 페이지를 로드한다. 첫 페이지 로드가 실패할 경우가 꽤 있어서, 30초로 타임아웃 설정하고 타임아웃 발생시 다시 로드 시도한다
-    # driver.set_page_load_timeout(30)
     while len(page_sources) == 0:
         try:
             driver.get(starting_page)
@@ -32,7 +27,7 @@ def get_page_sources(starting_page, driver):
                     driver.close()
                     print("신상 클릭했는데 로드가 안 됨. 오류 상황임")
                     return page_sources
-                    # 신상 버튼이 없는 경우
+            # 신상 버튼이 없는 경우
             except TimeoutException:
                 pass
             # 팝업이 떠 있는 경우
@@ -64,27 +59,21 @@ def get_page_sources(starting_page, driver):
                             page_sources.append(page_source)
                         # 누르긴 했는데 로드가 실패함. 에러 상황임
                         except TimeoutException:
-                            driver.quit()
                             print("clicked next page, and failed to load")
                             return page_sources
                     # 다음 페이지 버튼이 없는 경우. while 에서 다음 페이지 요소를 체크하고 돌리기 때문에 일어나기 어려움
                     except TimeoutException:
-                        # 드라이버 종료
-                        driver.quit()
                         print("failed to find clickable next page link")
                         return page_sources
         except TimeoutException:
             continue
-    # driver.quit()
     return page_sources
 
 
-# Retrieves a list of all Internal links found on a page
+# Retrieves a list of all product detail links found on a page
 def get_links(bs_obj, include_url, previous_links=None):
     links = []
     include_url = urlparse(include_url).scheme + "://" + urlparse(include_url).netloc
-    # Finds all links that begin with a "/"
-    # for link in bsObj.findAll("a", href=re.compile("^(/|.*"+includeUrl+")")):
     for link in bs_obj.findAll("a", href=re.compile("[^a-z]productView.+", flags=re.IGNORECASE)):
         if link.attrs['href'] is not None:
             if link.attrs['href'].startswith("/"):

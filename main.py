@@ -24,21 +24,21 @@ except FileNotFoundError:
         writer = csv.DictWriter(csvFile, fieldnames=fieldnames)
         writer.writeheader()
 
-startingPages = ["http://www.etude.co.kr/product.do?method=new", "http://www.innisfree.com/kr/ko/ShopNewPrdList.do", "http://www.amorepacificmall.com/shop/prod/shop_prod_product_list.do"]
+startingPages = ["http://www.etude.co.kr/product.do?method=new", "http://www.innisfree.com/kr/ko/ShopNewPrdList.do",
+                 "http://www.amorepacificmall.com/shop/prod/shop_prod_product_list.do"]
 internalLinks = []
 try:
     driver = webdriver.Chrome(executable_path='/Users/JihyunSon/Documents/chromedriver')
     driver.set_page_load_timeout(30)
     for startingPage in startingPages:
         print("starting page: " + startingPage)
-        # pageSources.extend(getPageSourcesFrom(startingPage))
         pageSources = get_page_sources(startingPage, driver)
         domain = urlparse(startingPage).scheme + "://" + urlparse(startingPage).netloc
         for pageSource in pageSources:
             bsObj = BeautifulSoup(pageSource, "html.parser")
             internalLinks.extend(get_links(bsObj, domain, previous_links=previousLinks))
 
-    #제품 정보 긁어오기
+    # 제품 정보 긁어오기
     # 카테고리
     # startingPage = "http://www.innisfree.com/kr/ko/Product.do?catCd01=UA"
 
@@ -105,11 +105,10 @@ try:
     # 더페이스샵 옵션
     # internalLinks = ["http://www.thefaceshop.com/mall/product/product-view.jsp?dpid=AF006548"]
     with open('test.csv', mode='a') as newProductsCSVFile:
-        fieldnames = ['time','brand', 'category1', 'category2', 'product', 'options', 'price', 'amount', 'ingredients', 'image', 'url']
+        fieldnames = ['time', 'brand', 'category1', 'category2', 'product', 'options', 'price', 'amount', 'ingredients',
+                      'image', 'url']
         currentTime = datetime.now().strftime('%Y-%m-%d %H:%M')
         writer = csv.DictWriter(newProductsCSVFile, fieldnames=fieldnames)
-        # 'a' mode로 열면 reader 작동 안함
-        # driver = webdriver.PhantomJS(executable_path='/Users/JihyunSon/Downloads/phantomjs-2.1.1-macosx/bin/phantomjs')
 
         for internalLink in internalLinks:
             product = crawl_product(internalLink, driver)

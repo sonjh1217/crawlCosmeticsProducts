@@ -15,14 +15,6 @@ def crawl_product(link, driver):
         html_file = urlopen(link, cafile=certifi.where())
         bs_obj = BeautifulSoup(html_file, "html.parser")
 
-        # driver.set_page_load_timeout(30)
-        # while True:
-        #     try:
-        #         driver.get(internalLink)
-        #         break
-        #     except TimeoutException:
-        #         continue
-
         if bs_obj.find('th', text=re.compile('제조')) is None:
             driver.get(link)
             try:
@@ -33,7 +25,6 @@ def crawl_product(link, driver):
                 #     EC.element_to_be_clickable((By.XPATH, "//ul[@class='euiSelectList'/li[1]']")))
                 # element.click()
                 # pageSource = driver.page_source
-
             except TimeoutException:
                 pass
             finally:
@@ -56,8 +47,6 @@ def crawl_product(link, driver):
             print('>>>return: 공산품')
             return
 
-
-
         # 브랜드
         # brand = bsObj.find("th", text=re.compile('제조자/제조판매원')).parent.td.get_text()
         # 에뛰드 제조사 / 제조국 / 판매원
@@ -78,7 +67,6 @@ def crawl_product(link, driver):
         if brand_text == '아모레퍼시픽' and bs_obj.find(True, text=re.compile('전성분 정보')) is not None:
             brand_text = bs_obj.find(True, text=re.compile('전성분 정보')).parent.parent.find(
                 attrs={'class': 'brandNm'}).get_text()
-            # 왜 div를 넣으면 잘 찾고 안 넣으면 None이 나오냐? -> parameter가 name인 줄 알아서 그런다
         print(brand_text)
 
         # 용량
@@ -105,22 +93,17 @@ def crawl_product(link, driver):
                     options += option
                     if i < len(option_obj_list) - 1:
                         options += '\n'
-                        # '\r\n' 붙이면 다 프린트되고 '\r'만 붙이면 마지막 라인만 출력
-                        # \n is the *nix line break, while \r\n is the Windows line break... (Windows likes to be special...) For the most part, \n is what you need.
 
         # 성분
         # 이니스프리
         ingredients_obj = bs_obj.find("p", text=re.compile('전성분 보기'))
         if ingredients_obj is not None and ingredients_obj.next_sibling.next_sibling is not None:
             ingredients = ingredients_obj.next_sibling.next_sibling.get_text().strip()
-            # # '\r'이 있으면 마지막 라인만 프린트됨
-            # ingredients = ingredients.replace("\r", "")
         # 에뛰드
         elif bs_obj.find(alt=re.compile('전성분$')) is not None:
             ingredients = bs_obj.find(alt=re.compile('전성분$')).parent.parent.get_text().strip()
         # 아모레 퍼시픽 몰
         elif bs_obj.find(True, text=re.compile('전성분 정보')) is not None:
-            # ingredients = bsObj.find(True, text=re.compile('전성분 정보')).parent.parent.find('p').get_text()
             ingredients_objs = bs_obj.find(True, text=re.compile('전성분 정보')).parent.parent.find_all('p')
             ingredients = ''
             options = ''
@@ -149,7 +132,7 @@ def crawl_product(link, driver):
 
                 ingredients += ingredient
 
-            if ingredients == '':  # 소품 or 모든 옵션에 전성분이 등록 안 된 경우
+            if ingredients == '':
                 print('>>>return: 소품 or 모든 옵션에 전성분이 등록 안 된 경우')
                 return
         # 더페이스샵 전성분보기 버튼 없음
@@ -169,11 +152,6 @@ def crawl_product(link, driver):
         #     ingredientsOptionList[i] = ingredientsOptionList[i].replace("]", "")
         #     ingredientDict[ingredientsOptionList[i]] = ingredientsList[i + 1].strip()
         # print(ingredientDict)
-        # 제품 요약 정보 이용
-
-        # meta 이용
-        # 제품명
-        # productName = bsObj.find("div", id="pdtView")['prdnm'].strip()
 
         # 이니스프리, 아모레퍼시픽
         product_name_obj = bs_obj.find(property="rb:itemName")
@@ -234,7 +212,6 @@ def crawl_product(link, driver):
         price = price.replace('다운', '')
         price = price.replace('\n', '')
         print(price)
-
         # meta 이용 끝
 
         # script 이용
@@ -288,13 +265,10 @@ def crawl_product(link, driver):
                 category1 = category1.replace('\t', '')
                 category1 = bs_obj.find(href=re.compile('=' + category1 + '$'), text=re.compile('.*')).get_text()
                 category2 = bs_obj.find(href=re.compile('=' + category2 + '$'), text=re.compile('.*')).get_text()
-
         print(category1)
         print(category2)
-
         # script 이용 끝
 
-        # 출력
         product = dict()
         product['brand'] = brand_text
         product['category1'] = category1
