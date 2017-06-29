@@ -28,7 +28,8 @@ startingPages = ["http://www.etude.co.kr/product.do?method=new", "http://www.inn
                  "http://www.amorepacificmall.com/shop/prod/shop_prod_product_list.do"]
 internalLinks = []
 try:
-    driver = webdriver.Chrome(executable_path='/Users/JihyunSon/Documents/chromedriver')
+    # driver = webdriver.Chrome(executable_path='/Users/JihyunSon/Documents/chromedriver')
+    driver = webdriver.PhantomJS(executable_path='/Users/JihyunSon/Downloads/phantomjs-2.1.1-macosx/bin/phantomjs')
     driver.set_page_load_timeout(30)
     for startingPage in startingPages:
         print("starting page: " + startingPage)
